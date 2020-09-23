@@ -1,0 +1,189 @@
+How does the class work ?
+-------------------------
+More about the working of the GA-class
+
+
+Encoding
+Chromosomes
+The fitness-score
+The fitness function
+Creating a population
+Selection
+	Rank
+	Roulette wheel
+	Tournament
+Crossover
+	One point
+	Two point
+	Uniform
+	Half-uniform
+	Edge Recombination
+Mutation
+	Mutation rate
+	Full gene mutation
+	No full gene mutation
+Evaluation
+
+========================================================================
+
+Encoding
+
+You are responsible for the encoding. This means that you must find a way to place the variables needed to solve the problem in an array of elements. The type of these elements can be :
+	binary numbers ( 0 and 1 )
+	alphabetical symbols (uppercase from A to Z )
+	long integer numbers
+	double numbers (real numbers)
+You cannot mix different elementtypes, all elements are the same type. (This is logical, crossover can only occur if every element is of the same type..)
+The length of each of these elements can be set for each type. A length for binary and alphabetical encoding, and a minimum-maximum value for long and double numbers.
+
+Each such element becomes a gene. Multiple genes in an array form a chromosome.
+
+You must decide what type of encoding is best suited for the problem you face, keeping in mind that you will also have to write a fitness function that can handle the encoding.
+
+
+------------------------------------------------------------------------
+
+Chromosomes
+
+The chromosomes are kept in an array which ranges from 0 to (PopulationCount - 1). This array is sorted by fitness-score. The chromosome with index 0 is the best chromosome in the population (it has the lowest fitness-score). The chromosome with index = (PopulationCount - 1) is the worst chromosome.
+
+
+------------------------------------------------------------------------
+
+The fitness-score
+
+Each chromosome has a fitness-score. This is a double number indicating how good this chromosome is at solving the problem at hand.
+It is important to remember that the class is made for fitness-scores evolving towards 0 (zero).
+
+A SMALL FITNESS-SCORE IS BETTER THAN A LARGE FITNESS-SCORE !
+
+A fitness of 0 (zero) means this chromosome solves the problem.
+
+
+------------------------------------------------------------------------
+
+The fitness function
+
+You are required to write a fitness function for the problem to be solved. This can often be the most tricky part.
+During the evaluation phase the classes 'EvaluateFitness'-event is fired. In this event you have to decode the chromosome, calculate a fitness and return this value.
+A fitness function can be broken down in two parts ; Decoding and Calculation.
+Decoding means just that, you decode the chromosome and it's genes to the elements you need. Since you are responsible for the encoding, you also know what a gene holds and what that value stand for.
+Calculating is just the check if the decoded values are a solution or not.
+
+Remember that a low fitness-score is better than a high one.
+
+If your fitness function can calculate a for-sure best answer possible, it should return 0 (zero) for this best answer. This means that the cycle can be broken at a best answer.
+If your fitness function can never return 0 (zero). The generation-cycle cannot be broken, and you will have to make sure that enough generations are used to come close to the solution. (And/or use multiple generation cycles and if the same answer appears multiple times you can go with that one)
+
+
+------------------------------------------------------------------------
+
+Creating a population
+
+Creating your starting population is easy. Once all the properties that define the encoding are set, just call the CREATEPOPULATION-method with the required amount of chromosomes. The class uses the property settings to generate random chromosomes.
+
+In some instances it can be better to leave the creation of chromosomes to you, and not use the random chromos of the class. This can be done by using the NewGene- and NewChromosome events. See the example 'The traveling salesman' for a explanation of how it works.
+
+------------------------------------------------------------------------
+
+Selection
+
+In the selection phase, two chromosomes are selected for reproduction. There are three ways of selecting those parents, set by SelectionMethod.
+The way you select individuals can be important, moreso if alot of the fitness-scores are close together.
+It is not a good idea to choose the two best chromosomes since this can lead very rapidly to a stagnation, where a lack of population diversity lead the population to converge on a non-optimal solution. This phenomenon is called local optima, read 'LocalOptima.txt' for more info on this.
+
+Rank
+----
+
+Rank selection uses the sort-order of the chromosomes. They are sorted by fitness from best to worst. Two members are randomly chosen out of the array. This means that a good chromosome has the same chance to be picked than a bad chromosome.
+
+Roulette wheel
+--------------
+
+The roulette wheel selection uses an imaginary wheel with pies of varying sizes for each member. Members with a better fitness get a bigger pie than those with a bad fitness. The pie sizes are not taken directly from the fitness-size. This is because the fitnesses can differ tremendously. One member could have a fitness of 10, while another member has a fitness of 1E+10. Taking pies proportionally to the fitness would really mean that a bad chromosome would virtually never have a chance of being selected. Doing this would augment greatly the occurence of local optima.
+To even out the pies their sizes are proportional to their index. Since index 0 is the best chromosome and index (PopulationCount - 1) is the worst, the index can be used as an even spread. 
+So, for a population of 100 the first chromosome gets a pie of 100, the second member has a pie of 99... the last one has a pie of 1.
+When the wheel is spun, bad chromosomes have at least a chance of being picked.
+
+Even with this choice of pies, roulette wheel tends to arrive to convergence too quickly. Therefore I build-in a mechanism to avoid premature convergence with roulette wheel. If the fitness-score of both parents are the same, the wheel is spun again. If this happens 3 times in a row, the class jumps to Rank selection for this time (roulette wheel stays the default selection type, but this one selection will happen through Rank selection). 
+The value 3 can be modified in code ; cRouletteWheelSpinMax is a private constant.
+
+Tournament
+----------
+The third way to select parents : hold a tournament.
+A number of individuals are selected randomly from the population. This number can be set with the property TournamentSize, 10% to 20% of the populationsize is a good number. From this pool the best chromosome is chosen. Repeat this a second time to obtain the second parent.
+
+
+------------------------------------------------------------------------
+
+Crossover
+
+Crossover is the way chromosomes 'reproduce'. There are 5 different ways a crossover can occur.
+My class also offers the possibility to crossover 'on full genes'. This basically means that a gene will be seen as one single element that cannot be split. So during crossover only complete genes will be swapped.
+
+One-point crossover
+-------------------
+A random point is chosen in a chromosome. Everything after that point is swapped between parents.
+
+Two-point crossover
+-------------------
+Two points are chosen randomly in a chromosome. Everything between these points is swapped.
+
+Uniform crossover
+-----------------
+All elements in both parents get swapped based on a random probability. This random chance is 50%, but this cab be modified in code by changing the constant cCrossoverUniform
+
+Half-uniform crossover
+----------------------
+Half of the non-matching elements will be swapped between the parents
+
+Edge recombination
+------------------
+This method is specific for routing problems like 'The traveling salesman'. No matter the encodingtype you choose, a chromosome will always be seen as a string of waypoints to follow. You start at Gene0 towards Gene1, from there to Gene2... In addition you must imagine thet Gene0 borders on the last Gene, In this way a full circle is created.
+I'm not going in detail in the actual calculation. You'll find more than enough explanations using Google.
+Some things to remember :
+Edge recombination only works on full genes. The setting 'crossover on full gene' will automatically be set if this method is chosen. 
+Edge recombination only generates one child, while the other crossover methods generate two children.
+Mutation cannot happen on the created child, this would lead to incorrect chromosomes.
+You should use your own routine to create new chromosomes as needed. Since the chromosomes represent routes, their genes should represent the waypoints on this route. Having them created randomly will produce many invalid chromosomes. Use the event 'NewChromosome' to provide your own chromosomes to the class. See the example 'The Traveling Salesman', it shows you how to do this.
+
+------------------------------------------------------------------------
+
+
+Mutation
+
+This is also an inportant part of a GA. After crossover occured, both children have a chance to mutate. The goal of mutation is twofold : provide a possibility to snap out of local optima and modify a chromosome in such a way that it becomes better (it can also become worse).
+Mutation is random and can result in a better or worse chromosome.
+
+Mutationrate :
+--------------
+The mutationrate is the percentage chance a mutation will occur. This can be fixed or adaptive.
+If mutation is fixed, this percentage remains unchanged through the entire cycle.
+If mutation is 'adaptive'. Then the standardDeviation of the fitness-scores is tracked during a number of generations (this number is set via property AMRGenerations). If this std.dev. remains unchanged, the mutationrate increases by 1% to a maximum of 100%. If the std.dev. changes the mutation decreases with 1% with a minimum set in MutationRate. The actual mutation rate can be known with property ActualMutationRate.
+
+full gene mutation :
+--------------------
+Mutation can happen on a full gene if the property 'Mutate full gene' is true. This means that a new gene will be randomly created. The NewGene-event will be fired and you can intervene in that event if you want.
+
+No full gene mutation :
+-----------------------
+If not mutating on full genes, a single character anywhere in the chromosome will be mutated.
+
+For encodingtypes Long and Double there is something extra here. If the property MutationBitlikeLongDouble is False, instead of changing 1 character, a small value can be added or subtracted (chosen at random) from the gene-value. The amount of this small value can be set by property 'MutationBitlikePercentage'. This is the percentage of the gene maximumvalue. The actual value to be added or subtracted will be chosen randomly between 0 (zero) and this percentage of the maximum.
+
+Note :
+Crossovertype 'Edge Recombination' will never allow a mutation, regardless of the values and properties set for mutation. This would allow for invalid chromosomes in this type.
+
+
+------------------------------------------------------------------------
+
+Evaluation
+
+The Evaluate method of the class will do the evaluation sequence. For each chromosome that needs to be evaluated, the 'EvaluateFitness'-event is fired.
+The index of the chromosome is given. You can use the 'show'-properties to get the chromosome and gene-values.
+You need to return the fitness in 'dblFitnessValue'.
+
+
+
+
+

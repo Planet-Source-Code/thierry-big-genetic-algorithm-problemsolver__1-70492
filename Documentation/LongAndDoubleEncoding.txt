@@ -1,0 +1,164 @@
+Crossover and mutation of long and doubles
+------------------------------------------
+
+Crossover
+    Full gene
+    No full gene
+Mutation
+    Adding or subtracting a value
+    Full gene
+    No full gene
+
+
+
+Crossover
+---------
+
+Crossover Full Gene
+-------------------
+When selecting to crossover on full gene, the breakpoints or crossover points happen on a complete-gene base.
+Example with long encoding :
+    chromo 1
+        gene 1	:	256
+        gene 2  :      1255
+        gene 3  :       120
+    chromo 2
+        gene 1  :      2648
+        gene 2  :      1058
+        gene 3  :       836
+
+Crossover on full gene means entire genes are seen as individual items. If one point crossover would happen on this example with crossoverpoint gene 2, this is the result of the crossover :
+    chromo 1
+        gene 1	:	256
+        gene 2  :      1058 ' crossedover
+        gene 3  :       836 ' crossedover
+    chromo 2
+        gene 1  :      2648
+        gene 2  :      1255 ' crossedover
+        gene 3  :       120 ' crossedover
+
+As you can see this is nothing special. The values of the individual genes themselves is unaltered. They just have switched to another chromosome.
+
+Crossover NOT on full genes
+----------------------------
+This is far more interesting !
+Crossover can happen anywhere in the chromosome.. so how does this happen on numbers.
+
+In order to do this properly the numbers are converted to strings. If you just use str(value) you end up with heaps of trouble :
+- numbers can have different character length
+- you can have minus signs (yes, plural ! see doubles)
+- the exponential part of doubles has it's own problems..
+
+So I had to devise a way to do this while steering clear of the above problems.
+
+First, let's take a closer look at the long and double datatype.
+
+Long datatype has a range from -2,147,483,648 to 2,147,483,647
+The maximum length of such a number in string format (not counting the thousand separator) is 11 (10 numericals plus 1 for the minus sign)
+
+The double datatype in VB6 can hold huge values and can work with floating point-values. 
+It's range is -1.79769313486231E308 to -4.94065645841247E-324 for negative values; 4.94065645841247E-324 to 1.79769313486232E308 for positive values
+
+But it has only a 15 digit accuracy !
+
+To understand it, try this :
+In the IDE type ;
+
+    Dim d As Double
+    
+    d = 12345678901234567890   ' 20 characters
+
+When you press entar the line above becomes :
+
+    d = 1.23456789012346E+19
+
+Which is also what you see in the range of the double datatype....
+Not counting the '.' character from the '1' to the '6' (before 'E') you have 15 digits. Sure, it holds huge (or very small) numbers, but they are in scientific notation and loose their accuracy rapidly.
+Total character length of such a number is 22 (15 digits + 1 decimal point + 1 for negative sign + 1 for character 'E' + 1 for negative power + 3 for exponent)
+
+
+If you browse through the helpfile/manual of VB6 you will find mention of a datatype called 'decimal' with an accuracy of 28 digits.... However it was never implemented in VB6 :(
+
+
+This means that converting a number to a string has to be done :
+for long, an RSET into a string of 11 spaces
+for double an RSET into a string 22 spaces
+The resulting string gets it's spaces changed to 0 to have a complete spread of leading zeroes.
+One special thing : if the value is negative I place the minussign on the first character in the string. This is to avoid having numbers appear in that gene before the minussign (especially with two-point crossover).
+
+Easy right ?
+
+BUT...   (yes there is always a but...)
+
+Non-numerical characters as minussigns, decimalpoints and exponent also appear in the string. If crossover would happen on such a point, results could lead to errors (overflow,...). Thus I needed a way to tell the code where it could do the crossover or not.
+I therefore create a mask. When converting a number to a string, I also make an accompanying mask. This mask is a string of the same length, but for each position it holds a '>' if this point is before the decimal point, "<" after the decimal point or a 'N' when not a suitable place for a crossover (minussign, decimal point, exponent).
+The mask will mark positions that are not numerical or are part of the exponent as places where a crossoverpoint cannot be placed.
+
+Example with doubles :
+    chromo 1
+        gene 1 : 3256.12458745
+        gene 2 : -6.45287452465864E25
+    chromo 2
+        gene 1 : 1.65842295648752E-121
+        gene 2 : 1.52789464548865E10
+
+Converted to strings, with their mask :
+    chromo 1
+        gene 1 : 0000000003256.12458745
+        mask 1 : >>>>>>>>>>>>>N<<<<<<<<
+        gene 2 : -006.45287452465864E25
+        mask 2 : N>>>N<<<<<<<<<<<<<<NNN
+    chromo 2
+        gene 1 : 01.65842295648752E-121
+        mask 1 : >>N<<<<<<<<<<<<<<NNNNN
+        gene 2 : 0001.52789464548865E10
+        mask 2 : >>>>N<<<<<<<<<<<<<<NNN
+
+Thus, when deciding of crossoverpoints, only points where for both chromosomes the mask indicate a '<' or '>' will be used.
+This means that exponents and minussigns can crossover, but they will never be cut at that place.
+A cut will also happen before or after the decimal point for both chromosomes. This is to avoid strange crossovers where a value would be created containing two decimal points.
+
+The mask is used again in mutation and must therefore be rebuild after crossover.
+
+
+Are you following me so far ?
+Yes ?
+
+Let's continue...
+
+All is good, we have a string holding our values and a mask... BUT !! (yes, I know another but..)
+
+If most of the values we use (depending of the problem) are rather small, we end up with a string that could be double the length of the actual characters forming the value. With alot of leading zeroes.
+For instance in the 'fill the grid' example, the maximum value of a long is 500. This means a long gene has a maximum length of 3 characters.
+If the value is 326 then you get :
+00000000326 (not showing the other genes)
+This means that crossover and mutation is far more likely to happen on the leading zeroes than on our value. And if one of those zeroes is changed, the value is bigger than the maximum allowed (500) which sets this genes to that maximum, and this entire chromosome almost certainly gets a high fitness-score.
+
+Alot of generational cycles would be wasted producing invalid chromosomes.
+In order to optimize crossover and mutation the actual length to use is calculated at the start of the REPRODUCTION cycle. Each gene of the two selected parents is examined. The minimal length to use in order to be able to hold all of the genes' values is calculated. This happens for long and doubles. 
+For doubles : if the exponent sign "E" is detected, the maximal length (22) is used.
+
+
+
+Mutation
+--------
+
+Adding or subtracting a value
+-----------------------------
+For long and doubles you can choose to have a small value be added or subtracted from the gene-value. This is the most used form of mutation for values.
+The value will be a random value chosen between 0 and a percentage of the maximum value a gene can hold.
+For instance :
+Long encoding, maximum value is 25000. You set the percentage to 10%. The value will be randomly chosen between 0 and 10% of 25000 = 2500. This value is added or subtracted (random, 50% chance either way).
+
+Full gene mutation
+------------------
+If full gene mutation is chosen, then the entire gene will be replaced by a random number. This option overrules the adding or subtracting option.
+
+Mutation NOT on full gene
+-------------------------
+This mutationmethod will modify one character inside the gene randomly. The mask discussed above is used to make sure no minus signs, decimal point or exponent is modified. All other characters inside the value can change.
+
+
+
+
+

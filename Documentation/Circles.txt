@@ -1,0 +1,44 @@
+CIRCLES PROBLEM
+---------------
+
+Let's start with something completely different, no more 'find X, Y and Z in following formula' (as if GA's could only be used for that)
+
+A fun and simple example of what GA's can do.
+
+Given a space (a picturebox) filled with a number of non-intersecting circles. Find the biggest possible circle you can draw without intersecting existing circles or draw outside the boundary of the box.
+
+
+Working with the example form
+-----------------------------
+
+Choose howmany random circles you want to draw. 10 is default. Click 'clear and draw random circles' as many times as you which until you get a problem space that you like.
+
+Choose the number of generations to try to solve it (50000 is default).
+
+Click 'start' to start the cycle.
+
+A red circle will appear, that is the best and biggest circle the GA has found so far. 
+
+
+The code behind the problem
+---------------------------
+
+GA-SETTINGS
+
+Loaded from file 'Circles.GA'
+
+
+ENCODING
+
+A circle is defined by the position of it's center and it's radius. These three numbers are the genes. Long integer encoding is used.
+
+
+FITNESS
+
+The fitness function checks if the circle does intersect with an allready existing circle, or is drawn outside the picturebox. If so then a high fitness is given.
+If not, and the circle has a bigger radius than the best one found so far, this becomes the best circle.
+Since we want the biggest circle ( = biggest radius ) the radius can be taken as fitness. The GA class works with better fitness towards 0, so the inverse of the radius is taken. Thus fitness-score =  1 / radius
+
+Note that in this example the fitness-score will never reach zero, thus the GA will never stop until the number of generations is reached.
+If you increase the number of circles, thus complicating the problem space, it is possible you will have to increase the number of generations. By complicating the problem, the chance of hitting a local optima increases. Increasing the number of generations gives the GA more chances to break free of the local optima.
+

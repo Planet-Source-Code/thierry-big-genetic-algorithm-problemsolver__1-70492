@@ -1,0 +1,921 @@
+Genetic Algorithm Class
+-----------------------
+
+Properties
+Methods
+Events
+
+
+
+
+Properties
+----------
+
+ActualMutationRate..................[PROP01]
+AMRGenerations......................[PROP02]
+AplhabeticGeneLength................[PROP03]
+BinaryGeneLength....................[PROP04]
+ChromosomeType......................[PROP05]
+CounterCrossovers...................[PROP06]
+CounterDisasters....................[PROP07]
+CounterMutations....................[PROP08]
+CounterRandomOffsprings.............[PROP09]
+CrossoverFullGene...................[PROP10]
+CrossoverMethod.....................[PROP11]
+CrossoverRate.......................[PROP12]
+Description.........................[PROP13]
+DoubleGeneMaxValue..................[PROP14]
+DoubleGeneMinValue..................[PROP15]
+FitnessHighest......................[PROP16]
+FitnessLowest.......................[PROP17]
+FitnessSum..........................[PROP18]
+Generation..........................[PROP19]
+GenesPerChromosome..................[PROP20]
+KeepStatistics......................[PROP21]
+LongGeneMaxValue....................[PROP22]
+LongGeneMinValue....................[PROP23]
+MeanAverage.........................[PROP24]
+MutateFullGene......................[PROP25]
+MutationBitlikeLongDouble...........[PROP26]
+MutationBitlikePercentage...........[PROP27]
+MutationMethod......................[PROP28]
+MutationRate........................[PROP29]
+PopulationCount.....................[PROP30]
+PopulationSize......................[PROP31]
+RandomOffspringGeneration...........[PROP32]
+ReproductionMethod..................[PROP33]
+SelectedChromosomeIndex1............[PROP34]
+SelectedChromosomeIndex2............[PROP35]
+SelectionMethod.....................[PROP36]
+SocialDisasterDiversity.............[PROP37]
+SocialDisasterGenerations...........[PROP38]
+SocialDisasterMethod................[PROP39]
+StatisticsBestChromosome............[PROP40]
+StatisticsDisasterGenerationCounter.[PROP41]
+StatisticsDisasterOccured...........[PROP42]
+StatisticsHighestFitness............[PROP43]
+StatisticsLowestFitness.............[PROP44]
+StatisticsMutationRate..............[PROP45]
+StatisticsRouletteWheelOverflow.....[PROP46]
+StatisticsSelectionMethod...........[PROP47]
+StatisticsSocialDivercity...........[PROP48]
+StatisticsStandardDeviation.........[PROP49]
+TournamentSize......................[PROP50]
+Version.............................[PROP51]
+
+Methods
+-------
+
+Clear...........................[METH01]
+ClearAllFitness.................[METH02]
+ClearCounters...................]METH03]
+CREATEPOPULATION................[METH04]
+EVALUATE........................[METH05]
+ReadGASettings..................[METH06]
+REPRODUCTION....................[METH07]
+SaveGASettings..................[METH08]
+SaveGAStatistics................]METH09]
+SELECTION.......................]METH10]
+ShowChromosomestring............[METH11]
+ShowFitness.....................[METH12]
+ShowGenedouble..................[METH13]
+ShowGenelong....................[METH14]
+ShowGenestring..................[METH15]
+
+
+Events
+------
+
+EvaluateFitness.................[EVEN01]
+GAError.........................[EVEN02]
+NewChromosome...................[EVEN03]
+NewGeneDouble...................[EVEN04]
+NewGeneLong.....................[EVEN05]
+NewGeneString...................[EVEN06]
+
+
+
+=====================================================================
+
+ActualMutationRate [PROP01]
+
+Double
+ReadOnly
+
+This is the mutationrate that is actually used during mutation. If Mutationmethod is fixed, ActualmutationRate will be the same as MutationRate. If Mutationmethod is Adaptive then ActualMutationRate can be higher than MutationRate.
+
+---------------------------------------------------------------------
+
+AMRGenerations [PROP02]
+
+Long
+Read/Write
+
+Used only when Mutationmethod is adaptive mutationrate.
+Set the number of generations that the standard deviation of the fitness-scores has to remain the same before modifying the Actualmutationrate.
+
+---------------------------------------------------------------------
+
+AplhabeticGeneLength [PROP03]
+
+Integer
+Read/Write
+
+The length (in characters A-Z) of a gene when alphabetic encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+BinaryGeneLength [PROP04]
+
+Integer
+Read/Write
+
+The length (in characters 0-1) of a gene when binary encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+ChromosomeType [PROP05]
+
+Integer
+Read/Write
+
+Set the type of encoding used.
+Possible values :
+
+	GAEncodingBinary	Binary (0-1)
+	GAEncodingAlphabetic	Alphabetic (A-Z)
+	GAEncodingLongNbr	Long numbers
+	GAEncodingDouble	Double numbers (Real numbers)
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+CounterCrossovers [PROP06]
+
+Long
+ReadOnly
+
+Counts the number of crossovers that occured.
+
+---------------------------------------------------------------------
+
+CounterDisasters [PROP07]
+
+Long
+ReadOnly
+
+Counts the number of social disasters that occured.
+
+---------------------------------------------------------------------
+
+CounterMutations [PROP08]
+
+Long
+ReadOnly
+
+Counts the number of mutations that occured.
+
+---------------------------------------------------------------------
+
+CounterRandomOffsprings [PROP09]
+
+Long
+ReadOnly
+
+Counts the number of RandomOffsprings that occured.
+
+---------------------------------------------------------------------
+
+CrossoverFullGene [PROP10]
+
+Boolean
+Read/Write
+
+Let a crossover happen on individual characters inside a chromosome (see the chromosome as a string of all the genes values) or see the genes themselves as crossover-elements.
+Posible values :
+	TRUE	crossover happens on full genes
+	FALSE 	crossover can happen anywhere in the chromosome
+
+Note : When crossovermethod is Edge Recombination the crossover will always be on a full gene, regardless of this setting
+
+---------------------------------------------------------------------
+
+CrossoverMethod [PROP11]
+
+Integer
+Read/Write
+
+Sets crossovertechnique to use.
+Possible values :
+
+	GACrossoverOnePoint		One point crossover
+	GACrossoverTwoPoint		Two point crossover
+	GACrossoverUniform		Uniform crossover
+	GACrossoverHalfUniform		Half Uniform crossover
+	GACrossoverEdgeRecombination	Edge recombination
+
+Note : When crossoverMethod is GACrossoverEdgeRecombination the crossover will always be on a full gene, regardless of the setting in CrossoverFullGene.
+
+---------------------------------------------------------------------
+
+CrossoverRate [PROP12]
+
+Double
+Read/Write
+
+Set the crossover rate. This is a value between 0 and 1 (inclusive).
+A value of 0.7 means there is a 70% chance a crossover will occur. A value of 0.2 means 20% chance...
+
+---------------------------------------------------------------------
+
+Description [PROP13]
+
+String
+Read/Write
+
+An optional description for the current settings in the class. When the .GA-files are used this can be used as a remember or name for the current set of parameters.
+
+---------------------------------------------------------------------
+
+DoubleGeneMaxValue [PROP14]
+
+Double
+Read/Write
+
+The maximum value a gene can be when double encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+DoubleGeneMinValue [PROP15]
+
+Double
+Read/Write
+
+The minimum value a gene can be when double encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+FitnessHighest [PROP16]
+
+Double
+ReadOnly
+
+Returns the highest (= worst) fitness score in the current population.
+
+---------------------------------------------------------------------
+
+FitnessLowest [PROP17]
+
+Double
+ReadOnly
+
+Returns the lowest (= best) fitness score in the current population.
+
+---------------------------------------------------------------------
+
+FitnessSum [PROP18]
+
+Double
+ReadOnly
+
+Returns the sum of all the fitness scores in the current population.
+
+---------------------------------------------------------------------
+
+Generation [PROP19]
+
+Long
+ReadOnly
+
+Returns the generationnumber for the current cycle
+
+---------------------------------------------------------------------
+
+GenesPerChromosome [PROP20]
+
+Integer
+Read/Write
+
+Sets howmany genes there are in a chromosome.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+KeepStatistics [PROP21]
+
+Boolean
+Read/Write
+
+Enables the recording of statistics per generation
+See the properties StatisticsDisasterOccured, StatisticsHighestFitness , StatisticsLowestFitness, StatisticsMutationRate, StatisticsRouletteWheelOverflow, StatisticsSelectionMethod, StatisticsSocialDivercity and StatisticsStandardDeviation.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+LongGeneMaxValue [PROP22]
+
+Long
+Read/Write
+
+The maximum value a gene can be when Long encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+LongGeneMinValue [PROP23]
+
+Long
+Read/Write
+
+The minimum value a gene can be when Long encoding is used.
+
+Note : Do not modify this property once the generation cycle is started ! Doing this will lead to errors and/or crashes !
+
+---------------------------------------------------------------------
+
+MeanAverage [PROP24]
+
+Double
+ReadOnly
+
+Returns the average of the fitness scores of the current population
+
+---------------------------------------------------------------------
+
+MutateFullGene [PROP25]
+
+Boolean
+Read/Write
+
+Allow mutation the happen on gene-lebel or on bit-level.
+Possible values :
+	TRUE	At mutation a full gene will be mutated
+	FALSE	Only 1 character in a gene will mutate
+
+---------------------------------------------------------------------
+
+MutationBitlikeLongDouble [PROP26]
+
+Boolean
+Read/Write
+
+Sets the way mutation occur on a Long or Double gene if MutateFullGene is FALSE.
+Possible values :
+	TRUE	Mutation happen on a single bit in the gene, just like binary mutation.
+	FALSE	A random number will be added or subtracted (randomly) from the gene-value. The random number lies within a percentage of the maximum gene-value (set with LongGeneMaxValue or DoubleGeneMaxValue), this percentage can be set with MutationBitlikePercentage.
+
+Note : This property will only apply if MutateFullGene is FALSE
+	
+---------------------------------------------------------------------
+
+MutationBitlikePercentage [PROP27]
+
+Double
+Read/Write
+
+This is the percentage from the maximum gene-value that will be used as maximum for the random number used when MutationBitlikeLongDouble is FALSE.
+
+Note : This property will only apply if MutateFullGene is FALSE
+
+---------------------------------------------------------------------
+
+MutationMethod [PROP28]
+
+Integer
+Read/Write
+
+This is the technique of mutation to use.
+Possible values :
+	GAMutationRateFixed	MutationRate is fixed, it will never change
+	GAMutationRateAdaptive	MutationRate will change after a set number of generations where the standarddeviation of the fitness score stays the same.
+
+Note : For fixed mutation the mutation rate will always be the value in MutationRate.
+For Adaptive mutation the actual mutationrate will have as lower boundary the value in MutationRate and 1 as highest boundary.
+
+---------------------------------------------------------------------
+
+MutationRate [PROP29]
+
+Double
+Read/Write
+
+The mutationrate to use. This is a value between 0 and 1 (inclusive).
+A value of 0.05 means there is a 5% chance a mutation will occur. A value of 0.2 means 20% chance...
+For fixed mutation thie value will never change. For adptive mutation this value is the startingvalue for mutationrate. The actual mutationrate can be higher, but never lower than this value.
+
+---------------------------------------------------------------------
+
+PopulationCount [PROP30]
+
+Long
+ReadOnly
+
+Returns the number of chromosomes in the population.
+
+---------------------------------------------------------------------
+
+PopulationSize [PROP31]
+
+Long
+Read/Write
+
+Set before CREATEPOPULATION, this is the amount of chromosomes to create. PopulationCount should return the same number once a population has been created.
+
+---------------------------------------------------------------------
+
+RandomOffspringGeneration [PROP32]
+
+Boolean
+Read/Write
+
+Must a random offspring be created during SELECTION.
+Possible values :
+	TRUE	If both parents have different indexes, but the same genetic material (=genes of both chromosomes are identical) then parent 2 will be replaced by a new random chromosome.
+	FALSE	Identic parent check will be skipped. No random chromosome will be created.
+
+Note : 
+The way I implemented Random offspring Generation differs from the most used method.
+Normaly Random offspring Generation is used as follows :
+before the crossover, both parents have their genetic material compared, and if they are the same crossover does not occur (it would not change anything since they are identical) but one or two children are randomly created.
+
+My version of Random offspring Generation is a bit different. I test both parents if they are identical. If so I replace one of the parents with a new random chromosome and I allow crossover to take place.
+I figured that this way helped against premature convergence a bit more since I get rid of at least one identical chromosome. Allowing crossover to occur between the new random parent and the original, creating two children in the process, helps the required diversity in genetic material.
+
+---------------------------------------------------------------------
+
+ReproductionMethod [PROP33]
+
+Integer
+Read/Write
+
+The technique used to introduce newly created children into the population during the REPRODUCTION phase.
+Possible values :
+	GAReproductionReplaceWeakest	Children replace the weakest chromosomes
+	GAReproductionReplaceRandom	Random chromosomes in the population are replaced by the children
+	GAReproductionReplaceParents	The children will replace their parents.
+
+---------------------------------------------------------------------
+
+SelectedChromosomeIndex1 [PROP34]
+
+Long
+Read/Write
+
+After the SELECTION phase, before the REPRODUCTION phase, this value is the index of the first selected parent chromosome.
+
+---------------------------------------------------------------------
+
+SelectedChromosomeIndex2 [PROP35]
+
+Long
+Read/Write
+
+After the SELECTION phase, before the REPRODUCTION phase, this value is the index of the second selected parent chromosome.
+
+---------------------------------------------------------------------
+
+SelectionMethod [PROP36]
+
+Integer
+Read/Write
+
+The technique used to select the parents for reproduction.
+Possible values :
+	GASelectRouletteWheel	use roulette wheel
+	GASelectTournament	use tournament
+	GASelectRank		use rank method
+
+---------------------------------------------------------------------
+
+SocialDisasterDiversity [PROP37]
+
+Double
+Read/Write
+
+Is a value between 0 and 1. If the genetic diversity (= howmany different fitness-scores) is below this percentage a social disaster is triggered.
+A value of 0 efectively shuts off social disaster.
+A value of 0.1 means 10%. If there are less than 10% different fitness-scores in the population, then trigger a social disaster.
+A value of 0.45 means 45%....
+
+---------------------------------------------------------------------
+
+SocialDisasterGenerations [PROP38]
+
+Long
+Read/Write
+
+Is the amount of generations inbetween checks for social diversity.
+
+---------------------------------------------------------------------
+
+SocialDisasterMethod [PROP39]
+
+Integer
+Read/Write
+
+Set the social disaster technique to use.
+Possible values :
+	GASocialDisasterJudgementDay	Judgement day
+	GASocialDisasterPacking		Packing
+
+---------------------------------------------------------------------
+
+StatisticsBestChromosome [PROP40]
+
+String
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the best chromosome for the given generation. The returned data is always a string containing all the genes separated by a space.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsDisasterGenerationCounter [PROP41]
+
+Long
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the generationcounter that counts up to the value set in SocialDisasterGenerations.
+When this counter reaches the value of SocialDisasterGenerations a check is done if a disaster has to occur.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsDisasterOccured [PROP42]
+
+Boolean
+ReadOnly
+Input : Generationnumber (long)
+
+Returns wether or not a social disaster occured during generationnumber given in Input.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsHighestFitness [PROP43]
+
+Double
+ReadOnly
+Input : Generationnumber (long)
+
+Returns highest fitness-score (=worst) in the population during generation given in Input.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsLowestFitness [PROP44]
+
+Double
+ReadOnly
+Input : Generationnumber (long)
+
+Returns lowest fitness-score (=best) in the population during generation given in Input.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsMutationRate [PROP45]
+
+Double
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the actual mutationrate during generation given in Input.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsRouletteWheelOverflow [PROP46]
+
+Boolean
+ReadOnly
+Input : Generationnumber (long)
+
+Returns wether or not Roulette wheel selection had returned the set amount of same chromosomes, and therefore Rank-selection happened instead of Roulette wheel.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded. This statistic is only relevarnt if Roulette Wheel selection was the selection method.
+
+---------------------------------------------------------------------
+
+StatisticsSelectionMethod [PROP47]
+
+Integer
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the code for the chosen selectionmethod. See the GASelectionMethod enumeration.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded. This statistic is useful if you changed the GA-cycle routine in your problem-code to use random selectionmethods.
+
+---------------------------------------------------------------------
+
+StatisticsSocialDivercity [PROP48]
+
+Long
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the number of unique fitness-scores whithin the population at the given generationnumber.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+StatisticsStandardDeviation [PROP49]
+
+Double
+ReadOnly
+Input : Generationnumber (long)
+
+Returns the standarddeviation for the given generationnumber.
+
+Note : The property KeepStatistics must be set to TRUE if you want statistics to be recorded.
+
+---------------------------------------------------------------------
+
+TournamentSize [PROP50]
+
+Long
+Read/Write
+
+The size of the pool used in a tournament for tournament selection (SelectionMethod = GASelectTournament).
+This is the amount of random chromosomes to pick from the population to use in a tournament.
+
+Possible values :
+	Between 2 and (PopulationCount / 2)
+
+---------------------------------------------------------------------
+
+Version [PROP51]
+
+string
+ReadOnly
+
+Returns the versionnumber of the class.
+
+
+=====================================================================
+=====================================================================
+=====================================================================
+
+Methods
+-------
+
+
+Clear() [METH01]
+
+Empties the population. All properties remain at their setting at the moment of the Clear.
+
+---------------------------------------------------------------------
+
+ClearAllFitness() [METH02]
+
+Set all the chromosomes fitness to a high value, forcing all chromosomes to be re-evaulated at the next evaluate-phase.
+
+---------------------------------------------------------------------
+
+ClearCounters() [METH03]
+
+Clears all the counters, resetting them to zero.
+
+---------------------------------------------------------------------
+
+CREATEPOPULATION( Populationsize ) [METH04]
+
+Populationsize : long
+
+Create an intial population. The value in Populationsize is the amount of chromosomes to create. All encoding properties should be set before calling this method. Random chromosomes are created according to the encoding settings.
+
+For every randomly created gene the NewGeneString-event, NewGeneLong-event or NewGeneDouble-event is raised according to ChromosomeType.
+The NewChromosome-event is raised for every new chromosome.
+
+All counters are reset and the generationcounter is reset to 1.
+
+---------------------------------------------------------------------
+
+EVALUATE() [METH05]
+
+Raises the EvaluateFitness-event for every chromosome that needs to be evaluated.
+
+The standarddeviation for this generation is calculated
+
+If adaptive mutation is set, a check is done if the mutationrate needs to be altered.
+
+The check for social diversity is done en a social disaster is fired if necessary.
+
+---------------------------------------------------------------------
+
+ReadGASettings( file ) [METH06]
+
+file : string
+
+The argument 'file' is the complete path and filename of the .GA settingsfile to be read. All existing settings in the GA-object will be overwritten.
+
+---------------------------------------------------------------------
+
+REPRODUCTION(optional crossovermethod, optional reproductionmethod ) [METH07]
+
+crossovermethod : integer (variant)
+reproductionmethod : integer (variant)
+
+The two selected parents are reproduced.
+Normally the value of property CrossoverMethod is used to determine the type of crossover to use. The optional argument 'crossovermethod' allows to override the set CrossoverMethod property. The same is true for reproductionmethod.
+
+Parents are crossed-over and eventually mutated. The children are then inserted into the population according to the chosen reproductionmethod.
+
+---------------------------------------------------------------------
+
+SaveGASettings( file ) [METH08]
+
+file : string
+
+The argument 'file' is the complete path and filename of the .GA settingsfile to be created. If a file already exists, it is overriden without warning.
+
+---------------------------------------------------------------------
+
+SaveGAStatistics( file ) [METH09]
+
+file : string
+
+The argument 'file' is the complete path and filename of the statisticsfile to be created. If a file already exists, it is overriden without warning.
+The created file is a simple textfile containing all the GA settings, all the counters and full statistics as they are at the time this method is called.
+
+Note 1 : The property KeepStatistics must be set to TRUE if you want statistics to be recorded. If KeepStatistics is false, only the settings and counters will be written.
+
+Note 2 : Since the saving format of the GA-settings is identical in this file as in the GA-settings file created by SaveGASettings, you can read in settings from a statistics-file with ReadGASettings.
+
+---------------------------------------------------------------------
+
+SELECTION(optional Selectionmethod) [METH10]
+
+Selectionmethod : integer (variant)
+
+Two parents are selected according to the method of selection. Normaly the value of property SelectionMethod is taken, but the optional argument Selectionmethod allows you to override this.
+
+If selected a Randomoffspring-generation can occur.
+
+After this method the properties SelectedChromosomeIndex1 and SelectedChromosomeIndex2 hold the indexes of the selected parents.
+
+---------------------------------------------------------------------
+
+ShowChromosomestring( index ) [METH11]
+
+index : long
+
+Returns a string that holds the entire chromosome (all its genes). This method always returns a string regardless of the encodingtype used. Long and Double numeric data is returned into a string. Each gene within this string has the same length.
+The argument index is the indexnumber of the chromosome. The index can range from 0 to (PopulationCount - 1).
+
+---------------------------------------------------------------------
+
+ShowFitness( index ) [METH12]
+
+index : long
+
+Returns the fitness-score (double number) of the chromosome with index equal to the argument 'index'.
+
+---------------------------------------------------------------------
+
+ShowGenedouble( index, gene ) [METH13]
+
+index : long
+gene : integer
+
+Returns a double which is the value of the gene from chromosome with index = argument 'index', and gene number 'gene'.
+Index has a range from 0 to to (PopulationCount - 1).
+Gene has a range from 0 to (GenesPerChromosome - 1).
+
+Used with encodingtype = GAEncodingDouble 
+
+---------------------------------------------------------------------
+
+ShowGenelong( index, gene ) [METH14]
+
+index : long
+gene : integer
+
+Returns a long which is the value of the gene from chromosome with index = argument 'index', and gene number 'gene'.
+Index has a range from 0 to to (PopulationCount - 1).
+Gene has a range from 0 to (GenesPerChromosome - 1).
+
+Used with encodingtype = GAEncodingLongNbr
+
+---------------------------------------------------------------------
+
+ShowGenestring( index, gene ) [METH15]
+
+index : long
+gene : integer
+
+Returns a string which is the value of the gene from chromosome with index = argument 'index', and gene number 'gene'.
+Index has a range from 0 to to (PopulationCount - 1).
+Gene has a range from 0 to (GenesPerChromosome - 1).
+
+Used with encodingtype = GAEncodingBinary or GAEncodingAlphabetic
+
+
+
+
+=====================================================================
+=====================================================================
+=====================================================================
+
+Events
+------
+
+
+EvaluateFitness( index, byref dblFitness ) [EVEN01]
+
+index : long
+dblFitness : double
+
+This event is fired during the EVALUATE phase for every chromosome where the fitness needs to be calculated.
+The parameter index is the index of the chromosome to be evaluated.
+The value dblFitness is the value of the current fitness for this chromoosome. The main code routine should apply the fitness calculation for the problem at hand and fill the fitness-score into dblFitness.
+
+---------------------------------------------------------------------
+
+GAError( ErrorCode, ErrorDescription ) [EVEN02]
+
+ErrorCode : long
+ErrorDescription : string
+
+The GAError-event is fired if a trappable error happened in the key-methods of the GA cycle.
+ErrorCode is the error-number and ErrorDescription is a descriptiontext of the error and where it happened.
+
+
+---------------------------------------------------------------------
+
+NewChromosome( stringarray, longarray, doublearray, GANewChromosomeOriginType) [EVEN03]
+
+stringarray : array of strings
+longarray : array of longs
+doublearray : array of doubles
+GANewChromosomeOriginType : enumeration
+
+The NewChromosome-event is fired whenever a new random chromosome is created. This can happen during CREATEPOPULATION, GenerateRandomOffspring, and when social disasters occur. The origin of the request can be known with the GANewChromosomeOriginType enumeration, useful for special cases (co-evolution).
+Three arrays are always provided, but only the one with matching type in encoding (ChromosomeType) contains values.
+The array according to the encoding contains the randomly generated genes. Tha array index ranges from 0 to (GenesPerChromosome - 1).
+The code in this event can override the array to offer a different chromosome to be used as a new member of the population.
+
+---------------------------------------------------------------------
+
+NewGeneDouble( gene ) [EVEN04]
+
+gene : double
+
+When encodingtype = GAEncodingDouble. The value of gene is a double.
+
+This event is fired when a new gene has been randomly created. This happens when a new chromosome is created (as many times as GenesPerChromosome) during CREATEPOPULATION, GenerateRandomOffspring, and when social disasters occur.
+But also during REPRODUCTION if MutateFullGene is TRUE.
+The value in gene contains a randomly created gene, but the code in this event can override this value, offering a new gene to be used.
+
+---------------------------------------------------------------------
+
+NewGeneLong( gene ) [EVEN05]
+
+gene : long
+
+When encodingtype = GAEncodingLongNbr. The value of gene is a long.
+
+This event is fired when a new gene has been randomly created. This happens when a new chromosome is created (as many times as GenesPerChromosome) during CREATEPOPULATION, GenerateRandomOffspring, and when social disasters occur.
+But also during REPRODUCTION if MutateFullGene is TRUE.
+The value in gene contains a randomly created gene, but the code in this event can override this value, offering a new gene to be used.
+
+---------------------------------------------------------------------
+
+NewGeneString( gene ) [EVEN06]
+
+gene : string
+
+When encodingtype = GAEncodingBinary or GAEncodingAlphabetic. The value of gene is a string.
+
+This event is fired when a new gene has been randomly created. This happens when a new chromosome is created (as many times as GenesPerChromosome) during CREATEPOPULATION, GenerateRandomOffspring, and when social disasters occur.
+But also during REPRODUCTION if MutateFullGene is TRUE.
+The value in gene contains a randomly created gene, but the code in this event can override this value, offering a new gene to be used.
+
+
+
+
+
+
+

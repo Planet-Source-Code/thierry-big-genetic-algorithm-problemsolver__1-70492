@@ -1,0 +1,140 @@
+Introduction
+------------
+
+The explanation in this textfile should be used together with the very first example 'Explaining genetic algorithms. (X+Y=15)'. If you are new to GA's you will probably not understand everything at first, but follow the introduction-sample and go take a look at the other examples. If your curiosity has been triggered you will understand it by reading the other textfiles, digging the code and the samples :)
+
+
+
+What is a genetic algorithm ?
+What can it be used for ?
+Is there a drawback ?
+Do I always get a solution ?
+So how does this work in an application ? (this is the explanation using the first example)
+
+
+
+What is a genetic algorithm ?
+-----------------------------
+
+There are many websites that explain far better than I can the what and how of genetic algorithms. Using Google will produce hundreds of links all better than this little scribble.
+
+But i'll try to explain it :)
+
+In short (and very, very simplistic) :
+
+Genetic algorithms mimmic the working of mother nature to evolve towards a possible solution for a given problem.
+In nature all organisms are build with genes connected together forming chromosomes. When organisms mate they share their genes. The genes of the child organism has traits of both parents. Once in a while a gene mutates giving the offspring a new trait (which can be good or bad).
+
+
+A GA (Genetic Algorithm) requires a representation of the solution in a format that can be shown in gene-chromosome format. Next it requires a fitness function that evaluates the chromosomes and attributes a fitness score to each. Chromosomes who work towards a solution get a better score than others.
+
+The working of a GA can be broken down as follows :
+
+STEP 1 : INITIALIZATION
+A number of chromosomes are created randomly. They form the initial population
+
+STEP 2 : EVALUATION
+Each chromosome is evaluated through the fitness function and gets a fitness score. If a chromosome has the solution the process can be halted because we found what we where looking for.
+
+STEP 3 : SELECTION
+A portion (usually 2 members) of the population are selected to breed. There are different ways to perform the selection but most of them involve the fitness score. Better individuals can mate with each other.
+
+STEP 4 : REPRODUCTION
+The selected individuals get to reproduce. This is done by crossover and eventual mutation.
+
+CROSSOVER : There are different methods of crossover. Mostly 'one-point-crossover' is used : a random point within both chromosomes is chosen. All information after the crossover point gets swapped between both parents, creating two children. 
+MUTATION : sometimes the genes within a child gets modified randomly
+ELITISM : The children can replace the parents in the population or they replace weaker chromosomes (weaker as in bad fitness score) from the population. Different techniques of elitism can be applied. The term elitism can also be used in the selection process, where selecting better chromosomes (better as in : better fitness score) is favored. Using elitism should be done with much caution because the 'local optimum'-monster can come out very quickly with too much elitism. (See 'LocalOptima.txt' to learn more about 'local optima' and how my class can fight it).
+
+
+GOTO STEP 2 : At this point go to step two with the new (hopefully improved) population. Most of the time a generation counter is used to eventually halt the procedure at some point even if no clear solution is found. In many cases a generation counter is even necessary !
+
+
+What can it be used for ?
+-------------------------
+
+Genetic algorithms are used in many branches, from games to stock exchanges to military simulations. Basically they can be used for almost any problem that you can solve using brute force. But the GA will be quicker to find a solution for it.
+
+
+Is there a drawback ?
+---------------------
+
+For most problems the GA will give you a possible solution, however most of the times there will be no way of knowing if it is the best solution ! 
+
+
+Do I always get a solution ?
+----------------------------
+
+There are many problems that you can use a GA for. For most of these problems you will have no idea of what the best solution is. And most of the time your fitness function will never reach 0 (zero = optimal solution). In those cases, you will have to run the GA over many generatins, and probably more than once. If the last 10000 or 20000 generations keep at the same solution, and this over several new retries or iterations (re-starting from generation 0 with a new population), you can assume that this is the best solution.....
+
+
+So how does this work in an application ?
+-----------------------------------------
+
+(See the examples and their accompanying info for hands-on explanation.)
+
+
+The following explanation should be used together with the example 
+'Introduction : Explaining Genetic Algorithms'
+
+
+Let's say you have the following problem :
+	x + y = 15
+	What are possible values for x and y assuming both are positive integers ?
+
+This is as simple an example as it gets but it's probably the best way to explain it.
+
+First you need a genetic representation of a solution. This is often done in binary format. This representation should be able to hold the complete solution domain. In our example the solution can range from (x=15, y=0) to (x=0, y=15).
+So let's represent x and y in binary format, which is four bits for each.
+Thus x can range from 0000 to 1111, the same goes for y.
+
+Well, x and y are our genes and together they form a chromosome. So each gene exists of four bits. Each chromosome consists of two genes. Let's say the first gene is x, the second one is y.
+Voila, we have our genetic representation:
+	x = 0, y = 15 represents as 0000 1111
+	x = 2, y = 13 represents as 0010 1101
+	x = 8, y = 8  represents as 1000 1000
+
+That last one is possible within our domain, but it is not a valid solution. 8 + 8 = 16. In fact there are many possible combinations that are not a valid solution...
+
+Thus now we need something to tell if a chromosome is a valid solution or not. In comes the fitness function.
+
+A fitness function takes each chromosome and tells if the chromosome works toward a solution or not. The fitness function does not say yes or no, it has to tell how close a chromosome is to a solution. Thus a fitness function is a numerical evaluation of how good the chromosome is at solving the problem at hand. Better chromosomes get a better fitness score.
+
+In our example x + y should give 15. But with changing values of x and y the result can be smaller or higher than 15. The fitness should represent how close the chromosome is to the solution.
+How do we know if a fitness is close to the solution or not ? Answer : By assuming that the solution for the problem equals a particular fitness value !
+
+My class is build around 0 (zero) as being the best possible fitness score. A fitness function returning 0 means a solution was found.
+So a function like ABS(15 - (x + y)) would be a perfect fitness function for our example. The smaller the absolute value the closer we are to a solution. Zero would mean a solution is found.
+
+OK, we have a representation and a fitness function. Now we can start.
+
+
+(Click the buttons on the sample form while reading on..)
+
+STEP 1 : INITIALIZATION
+A number of chromosomes are created randomly. In this example a population of 10 chromosomes.
+The class creates the chromosomes based on the properties entered (type of encoding, number of genes, ...). New chromosomes are assigned a very high fitness score (= bad, remember ? 0 = best fitness score).
+
+STEP 2 : EVALUATION
+Step each chromosome through the fitness function ABS( 15 - (X + Y)) and assign it it's fitness. In this case it is simply the result of the function.
+This is done by firing the classes 'EvaluateFitness'-event. Necessary info about the chromosome being evaluated are given, your function should fill in the dblFitness-variable.
+If during this first stage a chromosome yields a possible result, rejoice ! You can stop the loop and present the solution to the user. (Note that the explanation-sample will NOT stop when a solution is found !)
+
+STEP 3 : SELECTION
+Some chromosomes are selected to breed. There are different techniques for selecting the parents. this selection can be tricky, it is not always wise to pick the two best chromosomes because there is a pitfall in GA. Indeed GA's have their nemesis, their death star : it is called 'local optima' and it can be a pain. (More about 'local optima' and the weapons against it in 'LocalOptima.txt')
+
+So two parents are selected from the population. They will generate two children.
+
+STEP 4 : REPRODUCTION
+The reproduction step is where parents generate children. These new individuals will be introduced in the population in place of two other chromosomes. Indeed, the size of the population never varies. When new offspring are produced they will replace existing chromosomes. Several methods can be used to select the chromosomes to be replaced. Replacing the weakest chromosomes with the children can be called elitism. Again, this is not always the best way to go because of the dreaded local-optima (but you will see that the class has build-in ways to combat this)
+
+Now you go back to STEP 2 - EVALUATION and the cycle begins anew. Hopefully with a better population.
+
+
+Continuosly clicking on the buttons, advancing each step, you will often see that all the chromosomes tend to grow towards the same fitness score without giving a solution (fitness of 0). This is because of the randomness involved in the GA.
+The example code uses only 10 chromosomes as population. In reality you should go for no less than 100 individuals. Also, in the sample window you need to click three buttons before advancing to the next generation. Normally a GA would need to evolve over several thousand generations.
+
+
+
+
+I hope you understood at least a little of this small explanation. But even if you don't, check out the next examples. They show you what can really be done with GA's. And if your curiosity is triggered, reading the provided textfiles and browsing the code will eventually open your eyes.

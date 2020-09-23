@@ -1,0 +1,39 @@
+FILL THE GRID PROBLEM
+---------------------
+
+In a 3x3 grid, find 9 integer values so that the sum of each row and column equal a given number.
+Optionally you can choose to allow same values to be used more than once.
+
+Working with the example form
+-----------------------------
+
+The checkbox 'Allow same number to appear multiple times' does just what it says. If checked it is possible that the same value appears in two (or more) cells of the grid. Check it off if you want 9 different values.
+Enter a 'value for sum', default is 250. I suggest you enter values between 15 and 500. 
+Note that the GA-file for this problem has an upper limit for LongGeneValue of 500. You will have to modify this if you want to try with higher numbers.
+Choose howmany generations, 75000 is default.
+
+Click 'start' to start the cycle.
+
+The grid will show the best solution found so far. The sum for each row and column will color red when the value is wrong and blue for the correct value.
+
+
+The code behind the problem
+---------------------------
+
+GA-SETTINGS
+
+Loaded from file 'Fillgrid.GA'
+
+
+ENCODING
+
+Nine integer values need to be found. So encoding is Long Integer. Each gene holds 1 value, 9 genes form a chromosome.
+
+
+FITNESS
+
+First the chromosome is decoded and the sum is calculated for every row and column. For every row and column the absolute difference between the value we seek and the value in the genes is calculated. If this is 0 (zero) for a row or column, then this is a correct solution for this row or column. The total of these differences is our fitness-score. Is this total zero then we have a solution.
+
+If the checkbox 'Allow same number to appear multiple times' is unchecked the fitness function looks if the same value appears more than once in the chromosome. If so, the fitness value is increased with 100.
+
+

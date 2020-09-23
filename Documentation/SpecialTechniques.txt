@@ -1,0 +1,208 @@
+Some special techniques...
+--------------------------
+
+Changing properties during calculation
+Co-evolution (also known as Islands-model)
+
+
+Changing properties during calculation
+---------------------------------------
+Most of the properties of the class can be modified during calculation.
+You should check the properties-documentation ( PropertiesMethodsEvents.txt ) where I marked which properties should remain unchanged. Those are basically the parameters used for encoding.
+
+For example you could swap randomly or in order the selection- and reproductionmethods for each cycle.
+
+
+Co-evolution (also known as Islands-model)
+------------------------------------------
+This is a special technique that can be used against local optima.
+
+The idea is as follow :
+Instead of using one GA population you use two or more. One population is your master population, and you copy good chromosomes from the other populations to your master population.
+
+You present those individuals when the master GA fires it's NewChromosome-event.
+
+
+Code example : 
+
+I use three populations, GenAlg1, GenAlg2 and GenAlg3
+GenAlg1 is my master population
+
+
+intTakeFromSocialDisaster  is a module-level integer
+intAlternate 		   is a module-level integer
+
+    '
+    ' STEP 1 : INITIALIZATION
+    '
+
+   
+    ' Either load a GA-file (can be the same for each GA)
+    Call GenAlg1.ReadGASettings(<Full path and name of the GA-file>)
+    Call GenAlg2.ReadGASettings(<Full path and name of the GA-file>)
+    Call GenAlg3.ReadGASettings(<Full path and name of the GA-file>)
+    ' OR set properties in code 
+    GenAlg1.ChromosomeType = GAEncodingLongNbr
+    GenAlg1.LongGeneMaxValue = 1000
+    GenAlg1.GenesPerChromosome = 8
+    GenAlg1.PopulationSize = 150
+    .....
+
+    GenAlg2.ChromosomeType = GAEncodingLongNbr
+    GenAlg2.LongGeneMaxValue = 1000
+    GenAlg2.GenesPerChromosome = 8
+    GenAlg2.PopulationSize = 150
+    .....
+
+    ' Encoding must be the same for all the populations. But 
+    ' you are free to use different populatiosizes, selectionmethod,
+    ' crossovermethod, ....
+
+    
+    ' create the initial population
+    Call GenAlg1.CREATEPOPULATION(GenAlg1.PopulationSize)
+    Call GenAlg2.CREATEPOPULATION(GenAlg2.PopulationSize)
+    Call GenAlg3.CREATEPOPULATION(GenAlg3.PopulationSize)
+
+    intAlternate = 1
+
+    lngGeneration = 1
+    
+    blnDoLoop = True
+    
+    Do
+        ' 
+	' STEP 2 : EVALUATION
+        '
+        Call GenAlg1.EVALUATE
+        Call GenAlg2.EVALUATE
+        Call GenAlg3.EVALUATE
+
+	' Check if a solution was found, if so then exit the loop
+	if Solution = Found then
+	    Exit Do
+	EndIf
+
+
+	DoEvents
+
+        ' 
+	' STEP 3 : SELECTION
+        '
+        Call GenAlg1.SELECTION
+        Call GenAlg2.SELECTION
+        Call GenAlg3.SELECTION
+
+	DoEvents
+
+        ' 
+	' STEP 4 : REPRODUCTION
+        '
+        Call GenAlg1.REPRODUCTION
+        Call GenAlg2.REPRODUCTION
+        Call GenAlg3.REPRODUCTION
+
+	DoEvents
+
+        lngGeneration = lngGeneration + 1
+    Loop Until lngGeneration > LngNull(<Total number of generations>)
+    
+
+
+In the NewChromosome-event of the master GA, feed it chromosomes from the other two GA's
+
+Private Sub GenAlg1_NewChromosome(NewStringGenes() As String, NewLongGenes() As Long, NewDoubleGenes() As Double, ByVal intOrigin As GANewChromosomeOriginType)
+
+
+    ' Not when creating the population
+
+    Select case intorigin
+        case GANewChromosomeCreatePopulation then
+            ' Do not swap chromosomes during the creation of
+            ' the population
+            intTakeFromSocialDisaster = 0
+
+        case GANewChromosomeROG
+            ' Random offspring generation
+            ' Feed the best chromo from another GA
+            ' Use intAlternate to alternate between GA's
+
+            ' if encoding is long
+            select case intAlternate
+  	        case 1
+	            ' copy from GenaAlg2
+		    For intX = 0 To (GenAlg1.GenesPerChromosome - 1)
+	                NewLongGenes(intX) = GenAlg2.ShowGenelong(0, intX)
+ 	            Next intX
+                case 2
+	            ' copy from GenaAlg3
+	            For intX = 0 To (GenAlg1.GenesPerChromosome - 1)
+	                NewLongGenes(intX) = GenAlg3.ShowGenelong(0, intX)
+	            Next intX
+            End Select
+
+            IntAlternate = IntAlternatte + 1
+            If IntAlternate > 2 then
+                IntAlternate = 1
+            End If
+            intTakeFromSocialDisaster = 0
+
+	case GANewChromosomeSocialDisaster
+	    ' Social disaster
+            ' mostly, alot of chromosomes will be required
+	    ' Take the best from the GA's but allow also 
+            ' some new random
+
+            intTakeFromSocialDisaster = intTakeFromSocialDisaster + 1
+	    ' this variable is to ensure that only one chromo is 
+	    ' taken from the other GA's
+	    '
+	    ' The number 3 here is because we have 3 GA's
+	    ' Modify this number to the number of GA's you use
+	    if intTakeFromSocialDisaster < 3 Then
+                ' if encoding is long
+                select case intAlternate
+  	            case 1
+	                ' copy from GenaAlg2
+		        For intX = 0 To (GenAlg1.GenesPerChromosome - 1)
+	                    NewLongGenes(intX) = GenAlg2.ShowGenelong(0, intX)
+ 	                Next intX
+                    case 2
+	                ' copy from GenaAlg3
+	                For intX = 0 To (GenAlg1.GenesPerChromosome - 1)
+	                    NewLongGenes(intX) = GenAlg3.ShowGenelong(0, intX)
+	                Next intX
+                End Select
+
+                IntAlternate = IntAlternatte + 1
+                If IntAlternate > 2 then
+                    IntAlternate = 1
+                End If
+	    
+	    Else
+		' Do nothing, allowing the randomly generated
+		' chromosome to be used.
+
+	    End If
+
+    End Select
+
+Exit Sub
+
+
+Private Sub GenAlg1_EvaluateFitness(ByVal lngIndex As Long, dblFitness As Double)
+
+    ' write your fitness-function here
+    ' fill the fitness-score in dblFitness
+
+    ' You can use the same fitness formula for each GA,
+    ' Or you can make small adjustments to it for 
+    ' each GA ( very tricky, do so at your own risk )
+
+
+End Sub
+
+
+
+
+
