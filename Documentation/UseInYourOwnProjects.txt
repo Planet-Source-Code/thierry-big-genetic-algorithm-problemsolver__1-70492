@@ -1,0 +1,123 @@
+Using the GA-class in your own projects.
+----------------------------------------
+
+Required files
+Save file or in code options
+The code cycle
+
+
+
+Required files 
+--------------
+
+The class : clsGeneticAlgorithm.cls
+The declarations : Declarations.bas
+The supporting functions : SupportingFunctions.bas
+
+Optional : 
+The control panel : frmGenAlgControlPanel.frm and frmGenAlgControlPanel.frx
+The statistics form : frmGenAlgShowChromo.frm and frmGenAlgShowChromo.frx
+
+
+Notes :
+
+Declarations.bas
+You can also just copy the contents of this bas-file to your own declarations-module
+
+SupportingFunctions.bas
+You can also just copy the contents of this bas-file to your own module.
+
+The control panel and statistics form are optional. If you don't need them you can just ignore them.
+
+
+--------------------------------------------------------------
+
+Save file or in code options
+----------------------------
+You can choose to create a GA-file with the control panel, and just load this file before starting the cycle.
+Or you can set all the properties in code before starting the cycle. That's up to you.
+
+
+--------------------------------------------------------------
+
+The code cycle
+--------------
+
+Following is an example code...
+
+In the Declarations section of your module or form :
+
+Dim WithEvents GenAlg           As clsGeneticAlgorithm
+
+You will also need to set it, either at start of the GA-routine or somewhere else...
+
+    Set GenAlg = New clsGeneticAlgorithm
+
+
+In the GA-routine :
+
+    '
+    ' STEP 1 : INITIALIZATION
+    '
+
+    ' Either load a GA-file
+    Call GenAlg.ReadGASettings(<Full path and name of the GA-file>)
+    ' OR set the properties in code
+    GenAlg.ChromosomeType = GAEncodingLongNbr
+    GenAlg.LongGeneMaxValue = 1000
+    GenAlg.GenesPerChromosome = 8
+    GenAlg.PopulationSize = 150
+    .....
+
+    
+    ' create the initial population
+    Call GenAlg.CREATEPOPULATION(GenAlg.PopulationSize)
+
+    lngGeneration = 1
+    
+    blnDoLoop = True
+    
+    Do
+        ' 
+	' STEP 2 : EVALUATION
+        '
+        Call GenAlg.EVALUATE
+
+	' Check if a solution was found, if so then exit the loop
+	if Solution = Found then
+	    Exit Do
+	EndIf
+
+        DoEvents
+
+        ' 
+	' STEP 3 : SELECTION
+        '
+        Call GenAlg.SELECTION
+
+	DoEvents
+
+        ' 
+	' STEP 4 : REPRODUCTION
+        '
+        Call GenAlg.REPRODUCTION
+
+	DoEvents
+
+        lngGeneration = lngGeneration + 1
+    Loop Until lngGeneration > LngNull(<Total number of generations>)
+    
+
+And last but not least :
+
+Private Sub GenAlg_EvaluateFitness(ByVal lngIndex As Long, dblFitness As Double)
+
+    ' write your fitness-function here
+    ' fill the fitness-score in dblFitness
+
+End Sub
+
+
+You can add the possibility to view the control panel or the statistics screen. See the examples.
+
+

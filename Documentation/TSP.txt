@@ -1,0 +1,48 @@
+THE TRAVELING SALESMAN PROBLEM
+------------------------------
+
+The classic problem.
+
+Visit all the cities on a map, ending at the city you started in. Each city must be visited once and only once. You must travel the shortest distance possible.
+
+
+Working with the example form
+-----------------------------
+
+Choose howmany cities you want on your map. 30 is default. Click 'clear and draw random cities' as many times as you which until you get a problem space that you like.
+
+Choose the number of generations to try to solve it (50000 is default). Note that you may have to increase the number of generations if you increase the number of cities.
+
+Click 'start' to start the cycle.
+
+A green line will appear connecting all the cities. That is the best (shortest) route found so far. 
+
+
+The code behind the problem
+---------------------------
+
+GA-SETTINGS
+
+Loaded from file 'TSP.GA'
+
+
+ENCODING
+
+This problem uses the 'Edge Recombination' method as Crossovertype. This implies that the genes must hold each city locator (in this case the number associated with each city) in the order that they are visited.
+Each city is numbered. So the number of the city is the genetic material for every gene. Thus encoding is Long Integer.
+
+
+RANDOM CHROMOSOMES ?
+
+Most of the time a GA will create it's population randomly. In this case the chromosome must hold as many genes as there are cities. The gene's value must not exceed the number of cities and each city must appear once and only once per chromosome.
+If we let the GA create it's chromosomes randomly, the chances of getting a valid chromosome are close to nihil (and I'm not even accounting the required smaller travel-distance).
+
+In this case it is better that we create the chromosomes instead of the GA. In the form the array lngValidChromosome() gets initialised with all the city numbers. This array then gets jumbled so that each element of the array gets a random position. All the city numbers still appear in the array, but their location (order) inside the array is random. 
+When the GA needs a new chromosome, the NewChromosome-event is fired. I fill the new chromosome in that event with the lngValidChromosome-array. This way I'm sure that each number appears in it and only once. Each time the GA requests a new chromosome, the lngValidChromosome-array is jumbled again.
+
+
+FITNESS
+
+The goal is to find the shortest route. Since the class favors smaller fitness-score, the total distance for every chromosome is perfect as fitness-score.
+
+

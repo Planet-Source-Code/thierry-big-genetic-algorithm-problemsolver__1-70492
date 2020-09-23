@@ -1,0 +1,82 @@
+THE 0/1 KNAPSACK PROBLEM
+------------------------
+
+The standard knapsack problem is stated as follow :
+Given a set of items, each with a cost and a value, determine the number of each item to include in a collection so that the total cost is less or equal than a given limit and the total value is as large as possible.
+
+This problem is extremely simple to solve. Just take as much of the item with the biggest proportional value until the space left is too small. Continue with a smaller item until the knapsack is full. No need for a GA here...
+
+BUT : this is the '0/1 knapsack' problem which is a variant of the standard problem.
+
+The 0/1 states that you can only take 0 or 1 from each item. This simple extra rule makes the approach of the problem very different, and the simple solution stated above cannot be used. From being a simple problem, it has turned to a very hard one to solve.
+
+This version of the problem is usually solved using dynamic programming.
+
+
+!!! You should know that GA is not the best method for these kind of problems !!!
+
+
+The reason for this is mostly the fitness-function.
+There are two resulting variables : the remaining space in the knapsack, and the value of the knapsack. Remaining space should be as small as possible, while the value should be as high as possible.
+The combination of these resulting variables is difficult to translate to a working fitness-formula, since the problem asks for the best result without consideration for a better use of space, or a higher value. OK not entirely... the problem asks the highest possible value. But the solution stated for the standard problem also goes for minimal space left....
+
+One possible way to go would be to favor one of these variables. The user would have a choice of having either the maximal possible value, or the minimal space left.
+While this approach would be easier to implement, it breaks the spirit of the problem which requires the overall best solution.
+
+
+To resolve these kind of problems you could use the method I have implemented here :
+Use a GA to find a possible solution, but do this several times, or iterations.
+The GA is run several times, beginning with a completely fresh population each time. For each iteration the best result is remembered. Afterwards you can compare the solutions, picking the one that appeared the most.
+
+
+
+Working with the example form
+-----------------------------
+
+You see 10 items with each a volume (cost) and a value. Each column's total is shown below. The knapsack's volume can also be modified.
+
+The two buttons labeled 'Random' will fill the associated column with random numbers. You should check thet the total volume of the items is bigger than the volume of the knapsack. If not, then where is the problem ?
+
+The right panel holds the 'history' of the iterations. For each iteration the best result is kept, so that you can choose the one that appeared the most.
+
+The number of generations is by defaul set at 10000 which should be more than enough to yield a solution.
+
+The number of iterations is hardcoded at 5.
+
+Press 'start' to start the cycle. You will see 'X'es appear next to the items. Those marked with an X are the items that will be put in the knapsack.
+The 'Volume used', 'Remaining' and 'Knapsack value' will be filled with the values for the selected items
+
+
+The code behind the problem
+---------------------------
+
+GA-SETTINGS
+
+saved in the file 'knapsack.GA'
+
+
+ENCODING
+
+Each item can have 0 or 1 so simple binary encoding is enough. One gene per item and 10 genes for all of them to form a chromosome
+
+
+FITNESS
+
+The fitness function is tricky here. You have two output parameters to check : you want to use the maximum volume (so remaining must be as small as possible) but the value of the knapsack should be as high as possible.
+Since the GA class treats small fitnesses as better ones, the small volume we wanted is already a good number for a fitness return. But the high value must also be taken in effect.
+So the fitness is a combination of both these numbers :
+
+fitness = (maximum possible value - knapsack value) + remaing space
+
+You could trim the fitness to favor value or remaining space more or less. 
+
+You will note that the cycle does not stop until it arrives at the generation-limit (default : 10000). This is because the GA should only stop when a fitness of zero is reached. This means that you have at least knowledge of some or all of the items that appear in the knapsack when you write the fitness-function. If you do, then where is the problem ?
+
+This is such a case that you will never get a fitness of zero (0).
+
+After the number of iterations has been reached, check the history-panel. You can pick the solution that appears the most.
+
+
+P.S. :
+There will be situations where all 5 iterations return the same result. Most of the times this will happen when the difference between remaining volume and the  total possible value minus knapsack value is rather high.
+Further trimming the fitness formula can help. For instance working with percentages of (maximum possible value - knapsack value) and (maximùm volume - used volume). But then you come very close to favoring one or the other...

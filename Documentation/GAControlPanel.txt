@@ -1,0 +1,22 @@
+THE GA CONTROL PANEL
+--------------------
+
+The supplied control panel makes it possible to set all properties and possibilities of the genetic algorithm without having to change the initialisation code.
+
+The tabcontrol is where you set all the parameters. Below the tabcontrol is a box labeled 'Info'. When moving the mouse over a setting, a short information text will appear in this box giving an explanation about the parameter.
+The panel at the right shows an overview of all settings as currently set in the loaded GA-class object.
+
+The load and save buttons at the bottom left enables you to load and save the chosen settings in a GA-file. There is NO warning implemented when loading and overriding the existing settings, or when saving and overwritting an existing GA-file !!
+
+Clicking OK will set the current GA-object to the new settings (clicking 'Save' will also do this !!).
+
+
+
+All examples load their settings from a GA-file at the time the example-form opens. Before clicking 'Start' you can open the control panel and you will see the current settings, you can even modify them.
+I strongly suggest you do not modify the encoding-parameters, since the fitness function for each example is specifically written for these encodings.
+Other settings can be modified, but make sure you understand what you are doing. Some parameters are set for best results on the specific example, changing them may lead to bad solutions.
+
+
+
+
+

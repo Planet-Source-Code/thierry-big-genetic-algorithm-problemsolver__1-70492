@@ -1,0 +1,31 @@
+Genetic Algorithm Class
+----------------------- By Thierry Van Mol
+
+I have developped a genetic algorithm class containing many features to help me in my own projects. I offer the class to the community hoping someone can put it to good use in projects of their own.
+
+To help comprehend the working I made several examples all using the same genetic class. Information about using the class can be found in 'HowItWorks.txt', 'UseInYourOwnProjects.txt', 'LongAndDoubleEncoding.txt' and 'PropertiesMethodsEvents.txt'. All examples have their own textfiles. Some extra textfiles also explain local-optima and special techniques.
+
+This project is more a demo case aimed at showing and teaching the possibilities of genetic algorithms.
+
+
+
+
+I am open to questions, suggestions, remarks, constructive critisism and bug reports (should you find one let me know, and I'll try to fix it asap).
+
+Contact me at thierry.van.mol@hotmail.com
+
+
+
+Have fun,
+
+Thierry
+
+
+
+PS 1 :
+There is always a way to improve on existing code. Should you find a way to do something better and faster let me know. Especially in the fitness-functions.
+
+PS 2 :
+If you have problems loading the GA-files, especially when decimal numbers aren't read correctly, open the GA-files in notepad and check the decimal symbols. The load routine in the class (ReadGASettings) should convert them correctly. But you never know....
+
+

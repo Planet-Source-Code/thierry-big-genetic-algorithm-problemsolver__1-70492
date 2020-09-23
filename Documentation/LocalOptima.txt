@@ -1,0 +1,132 @@
+Local optima and how to fight it
+--------------------------------
+
+
+What is local optima ?
+What causes local optima ?
+How to avoid local optima ?
+	Selection
+	Random offspring generation
+	Mutation
+	Social Disasters
+	Reproduction
+Co-evolution or Islands-model
+
+
+What is local optima ?
+----------------------
+The declaration of the term is something like ; 
+A local optimum is a solution optimal within a neighboring set of solutions.
+
+In plain english it means that you have the best solution in a very specific range of the problem or solution domain.
+
+OK, it's still not understandable. Let's see it with a small example :
+
+Let's take the circles-sample. In the switchboard-menu click on 'Draw the biggest circle'. In the example form, instead of creating 10 circles create 30 circles. See that you have an even-like spread of circles in the picturebox, with several open places (Click several times if necessary). Now click on 'GA control panel' to go to the GA settings. Check that it is the 'circles.ga' that is loaded ('Circles' in description). On tab 'Selection and crossover' check off 'Random offspring generation'. On 'mutation and disasters' set mutationrate to '0.00', mutationtype to 'fixed', and 'Social disaster when genetic diversity is lower than' to 0 (zero - effectively switching off social disaster). Click 'OK'.
+Now start the cycle.
+It might not work the first time. You should see that a circle begins to be drawn in a space that visibly cannot hold the biggest circle. If that is not the case, click on 'stop' and then on 'start' again.
+You should see the circle slowly growing to fill the open space. And it stays there, without even trying the other spaces in the box. Most times the GA will use up it's generation-count (default 50000) and present you this circle as the best solution, while you can clearly see that it's not. Clicking 'Pause and view stats' will show you that most (if not all !!) chromosomes have identic fitness-scores or are very close to each other. This means you have a lack of population diversity. Most of the population will be clones of each other, they  will stay in their little place of the picturebox and stagnate.
+
+You have an 'optimum' solution, but very 'local' in the problem-space. 
+
+Of course even the best solution for the entire problem could also be seen as a local optima. It's the best local solution, but also the best global solution.
+
+
+
+What causes local optima
+------------------------
+simple answer : Too little genetic diversity.
+
+Longer answer :
+Premature convergence and too much elitism...
+
+The faster you want or allow the GA to converge, the bigger the risk of local optima. You must allow the population to be varied, so that they can explore the full problem domain.
+
+Elitism means choosing the better chromosome over a lesser one. This can be done at several places during the cycle in a GA.
+Elitism is not a bad thing to do, it allows for fast convergence. But there is something as 'too much' elitism.
+
+What is too much ?
+Selecting the two first vhromosomes for breeding, not allowing new random chromosomes to be generated......
+
+
+How to avoid local optima ?
+---------------------------
+So local optima occurs when most or all of the chromosomes want to be like the best one, without allowing new chromosomes to 'poison' the population with their liberal thinking like : 'let's explore the complete other side of the domain' :)
+
+You can avoid local optima by giving each chromosome (the best and the worst) almost equal chances to do their thing. If a population tends to converge to one point you can take drastic steps like a social disaster to kill most of the population and replace them with new random chromosomes...
+
+In the example above I had you switch off random offspring generation, set mutationrate to 0, mutationtype to fixed and switched off social disasters. In fact all these functions are means to avoid local optima.
+
+There are several ways in trying to avoid local optima.
+
+Selection
+---------
+There are three ways of selecting the parents ; Rank, Roulette wheel and Tournament.
+Rank and Tournament tend to give each individual in the population the same chance at being selected for breeding. So there is no problem here, since lesser chromosomes can also have their say.
+The problem lies with Roulette wheel. It is the only selection method that actively favors better chromosomes over lesser ones. This is the reason it is used in so many GA. My class does not use the actual fitness-score for the pie sizes, but even with the chosen method it can still discriminate the lesser ones.
+
+Roulette wheel selection is still a favorite for many people because it has a high convergence rate. But the risk of a premature convergence is far greater with roulette wheel than with Rank or Tournament.
+
+I came-up with a simple yet rather effective solution for roulette wheel :
+If the fitness-score of both parents are the same, the wheel is spun again. If this happens 3 times in a row, the class jumps to Rank selection for this time (roulette wheel stays the default selection type, but this one selection will happen through Rank selection). 
+The value 3 can be modified in code ; cRouletteWheelSpinMax is a private constant.
+
+You don't have to set a property or so, this mechanism is always active for roulette wheel.
+
+
+Random offspring generation
+---------------------------
+During the selection cycle two parents are selected. All selection methods will check that they do not have the same chromosome selected. This is done by making sure the index of both parents is not the same.
+But with convergence to local optima, all the chromosomes begin to become clones of each other.
+Random offspring generation will also check that the values of both chromosomes, their 'genetic meterial', is not the same. If they are identic, one of the parents will be replaced by a new random chromosome. No new selection takes place, this new chromosome will immediately become a parent.
+
+
+Note :
+The way I implemented Random offspring Generation differs from the most used method.
+Normaly Random offspring Generation is used as follows :
+before the crossover, both parents have their genetic material compared, and if they are the same crossover does not occur (it would not change anything since they are identical) but one or two children are randomly created.
+
+My version of Random offspring Generation is a bit different. I test both parents if they are identical. If so I replace one of the parents with a new random chromosome and I allow crossover to take place.
+I figured that this way helped against premature convergence a bit more since I get rid of at least one identical chromosome. Allowing crossover to occur between the new random parent and the original, creating two children in the process, with almost certainly a higher diversity in genetic material.
+
+
+
+Mutation
+--------
+My class give two kinds of mutation ; fixed and adaptive.
+
+Adaptive mutation can help in avoiding local optima. Adaptive mutation tracks the standard deviation of the fitnesses. When the entire population has converged to an optimum, the standard deviation of the fitness-scores will no longer fluctuate. This will allow the chances of a possible mutation to increase. Mutation tends to inject 'noise' in the population. This can help in pulling the population away towards a better optimum.
+
+
+Social disasters
+----------------
+Social disasters can be used to replace a huge amount of individuals if they have converged to an optima.
+Social disasters track the genetic diversity. In reality I use the amount of non-equal fitness-scores. If this diversity is lower than a chosen percentage the disaster will occur.
+In order to give some time for the population to recover from a previous disaster the check is done after a number of generations.
+
+There are two types of disasters : Judgement day and Packing.
+
+
+Judgement day only keeps one chromosome : the best one. All the other members are replaced by new random chromosomes.
+
+Packing looks for groups of chromosomes who are the same. Only one chromosome is kept for each of these groups, all the others are replaced by new random chromosomes.
+
+The disaster technique keeps the best chromosome(s). This is not a bad thing because there is a small chance that the optimum you have now is also the global optimum. The replacement of a huge amount of individuals injects alot of noise, giving a chance of breaking free from the local optima.
+
+
+Reproduction
+------------
+In the reproduction phase, the new children are introduced in the population.
+Since the populationsize does not vary, The children take the place of existing chromosomes.
+There are three ways to choose which chromosomes will be replaced :
+- replace parents
+- replace random
+- replace weakest
+
+You can choose which of the methods you prefer, none of them do much towards avoiding local optima. Altough replace parents can sometimes trow an entire population towards another direction. (if the parents where the two best chromosomes, and convergence hadn't occured yet).
+
+
+Co-evolution or Islands-model
+-----------------------------
+I discuss this method in SpecialTechniques.txt
+
